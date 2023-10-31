@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+
 using Microsoft.TeamFoundation.Build.Client;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.Server;
 using Microsoft.TeamFoundation.TestManagement.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
 using Microsoft.TeamFoundation.WorkItemTracking.Client;
+
 using SR.TFSCleaner.Models;
 
 namespace SR.TFSCleaner.Helpers
@@ -70,7 +72,7 @@ namespace SR.TFSCleaner.Helpers
                         .Where(a => a.Type == IdentityType.WindowsUser);
                 return
                     members.Select(
-                        member => new User() {UserName = member.AccountName, DisplayName = member.DisplayName})
+                        member => new User() { UserName = member.AccountName, DisplayName = member.DisplayName })
                         .OrderBy(n => n.DisplayName)
                         .ToList();
             }
@@ -84,10 +86,15 @@ namespace SR.TFSCleaner.Helpers
         private void CollectAllBugTransitions()
         {
             Transitions = new List<Transition>();
-            var categories = TestProject.WitProject.Categories["Microsoft.BugCategory"];
-            foreach (var witd in categories.WorkItemTypes)
+            const string bugCategoryName = "Microsoft.BugCategory";
+            if (TestProject.WitProject.Categories.Contains(bugCategoryName))
             {
-                Transitions.AddRange(witd.GetTransistions());
+                var categories = TestProject.WitProject.Categories[bugCategoryName];
+
+                foreach (var witd in categories.WorkItemTypes)
+                {
+                    Transitions.AddRange(witd.GetTransistions());
+                }
             }
         }
     }
